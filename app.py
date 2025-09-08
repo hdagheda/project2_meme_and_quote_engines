@@ -1,9 +1,13 @@
 import random
 import os
 import requests
+
+import tempfile
 from flask import Flask, render_template, abort, request
 
 # @TODO Import your Ingestor and MemeEngine classes
+from Ingestor.ingestor import Ingestor
+from MemeEngine.meme_engine import MemeEngine
 
 app = Flask(__name__)
 
@@ -20,13 +24,18 @@ def setup():
 
     # TODO: Use the Ingestor class to parse all files in the
     # quote_files variable
-    quotes = None
+    quotes = []
+    for f in quote_files:
+        quotes.extend(Ingestor.parse(f))
 
     images_path = "./_data/photos/dog/"
 
     # TODO: Use the pythons standard library os class to find all
     # images within the images images_path directory
-    imgs = None
+    imgs = []
+    for root, _, files in os.walk(images_path):
+        for name in files:
+            imgs.append(os.path.join(root, name))
 
     return quotes, imgs
 
@@ -43,8 +52,8 @@ def meme_rand():
     # 1. select a random image from imgs array
     # 2. select a random quote from the quotes array
 
-    img = None
-    quote = None
+    img = random.choice(imgs)
+    quote = random.choice(quotes)
     path = meme.make_meme(img, quote.body, quote.author)
     return render_template('meme.html', path=path)
 
@@ -66,7 +75,23 @@ def meme_post():
     #    file and the body and author form paramaters.
     # 3. Remove the temporary saved image.
 
-    path = None
+    image_url = request.form.get('image_url')
+    body = request.form.get('body')
+    author = request.form.get('author')
+
+    tmp_path = None
+    try:
+        resp = requests.get(image_url, timeout=10, verify=False)
+        resp.raise_for_status()
+        suffix = os.path.splitext(image_url)[1] or ".jpg"
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+            tmp.write(resp.content)
+            tmp_path = tmp.name
+
+        path = meme.make_meme(tmp_path, body, author)
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            os.remove(tmp_path)
 
     return render_template('meme.html', path=path)
 
