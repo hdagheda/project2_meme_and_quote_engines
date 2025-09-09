@@ -7,7 +7,8 @@ from QuoteEngine import QuoteModel
 
 class TextIngestor(IngestorInterface):
     """
-    Ingest .txt files where each non-empty, non-comment line contains a quote and author
+    Ingest .txt files where each non-empty, non-comment
+    line contains a quote and author
     separated by a common delimiter (e.g., ' - ', '-', ',', '|', ';').
     """
     allowed_extensions = {"txt"}
@@ -21,7 +22,9 @@ class TextIngestor(IngestorInterface):
     def parse(cls, path: str) -> List[QuoteModel]:
         if not cls.can_ingest(path):
             ext = cls._get_extension(path)
-            raise ValueError(f"{cls.__name__} cannot ingest '*.{ext}' (path='{path}')")
+            raise ValueError(
+                f"{cls.__name__} cannot ingest '*.{ext}' (path='{path}')"
+            )
 
         quotes: List[QuoteModel] = []
         with open(path, "r", encoding="utf-8") as f:

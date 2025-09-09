@@ -24,7 +24,9 @@ class CSVIngestor(IngestorInterface):
     def parse(cls, path: str) -> List[QuoteModel]:
         if not cls.can_ingest(path):
             ext = cls._get_extension(path)
-            raise ValueError(f"{cls.__name__} cannot ingest '*.{ext}' (path='{path}')")
+            raise ValueError(
+                f"{cls.__name__} cannot ingest '*.{ext}' (path='{path}')"
+            )
 
         quotes: List[QuoteModel] = []
         with open(path, "r", encoding="utf-8", newline="") as f:
@@ -36,7 +38,10 @@ class CSVIngestor(IngestorInterface):
             has_header = False
             if first_line:
                 lowered = [h.strip().lower() for h in first_line.split(",")]
-                has_header = ("body" in lowered and "author" in lowered) or ("quote" in lowered and "author" in lowered)
+                has_header = (
+                        "author" in lowered
+                        and ("body" in lowered or "quote" in lowered)
+                )
 
             if has_header:
                 reader = csv.DictReader(f)

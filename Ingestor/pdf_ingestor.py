@@ -10,11 +10,13 @@ from QuoteEngine import QuoteModel
 
 class PDFIngestor(IngestorInterface):
     """
-    Ingest .pdf files by leveraging the 'pdftotext' utility if available on the system.
+    Ingest .pdf files by leveraging the
+    'pdftotext' utility if available on the system.
 
     - Requires 'pdftotext' to be installed and available in PATH.
     - Falls back to a clear error if the utility is not found.
-    - Each resulting text line is parsed like a .txt line ('quote - author', etc.).
+    - Each resulting text line is parsed
+      like a .txt line ('quote - author', etc.).
     """
     allowed_extensions = {"pdf"}
 
@@ -27,15 +29,21 @@ class PDFIngestor(IngestorInterface):
     def parse(cls, path: str) -> List[QuoteModel]:
         if not cls.can_ingest(path):
             ext = cls._get_extension(path)
-            raise ValueError(f"{cls.__name__} cannot ingest '*.{ext}' (path='{path}')")
+            raise ValueError(f"{cls.__name__} cannot ingest '*.{ext}' "
+                             f"(path='{path}')")
 
         if shutil.which("pdftotext") is None:
             raise RuntimeError(
-                "PDF ingestion requires the 'pdftotext' utility to be installed and available in PATH."
+                "PDF ingestion requires the 'pdftotext' "
+                "utility to be installed "
+                "and available in PATH."
             )
 
         quotes: List[QuoteModel] = []
-        with tempfile.NamedTemporaryFile(suffix=".txt", delete=True) as tmp_out:
+        with tempfile.NamedTemporaryFile(
+                suffix=".txt",
+                delete=True
+        ) as tmp_out:
             # Convert PDF to text
             subprocess.run(
                 ["pdftotext", "-layout", path, tmp_out.name],

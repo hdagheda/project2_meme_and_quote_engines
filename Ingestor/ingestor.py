@@ -6,11 +6,13 @@ from typing import List
 
 from Ingestor.ingestor_interface import IngestorInterface
 
+
 class Ingestor(IngestorInterface):
     """
     Final façade for ingestion that encapsulates helper ingestors.
 
-    - Register concrete helpers (subclasses of IngestorInterface) via register/register_many.
+    - Register concrete helpers (subclasses of IngestorInterface)
+      via register/register_many.
     - Ingestor.can_ingest(path) returns True if any helper supports the file.
     - Ingestor.parse(path) delegates to the first matching helper.
     """
@@ -24,17 +26,25 @@ class Ingestor(IngestorInterface):
         """
         Register a helper ingestor.
 
-        The helper must subclass IngestorInterface and define non-empty allowed_extensions.
+        The helper must subclass IngestorInterface
+        and define non-empty allowed_extensions.
         """
-        if not isinstance(helper, type) or not issubclass(helper, IngestorInterface):
-            raise TypeError("Helper must be a subclass of IngestorInterface")
+        if (
+                not isinstance(helper, type)
+                or not issubclass(helper, IngestorInterface)
+        ):
+            raise TypeError(
+                "Helper must be a subclass of IngestorInterface"
+            )
 
         if helper in cls._helpers:
             return
 
         exts = getattr(helper, "allowed_extensions", None)
         if not exts:
-            raise ValueError(f"{helper.__name__} must define non-empty allowed_extensions")
+            raise ValueError(
+                f"{helper.__name__} must define non-empty allowed_extensions"
+            )
 
         cls._helpers.append(helper)
         cls.allowed_extensions.update(exts)
@@ -72,19 +82,25 @@ class Ingestor(IngestorInterface):
         """
         if not cls._helpers:
             raise RuntimeError(
-                "No ingestor helpers registered. Register helpers with Ingestor.register(...)"
+                "No ingestor helpers registered."
+                " Register helpers with Ingestor.register(...)"
             )
 
         helper = cls._select_helper(path)
         if helper is None:
             ext = cls._get_extension(path)
-            raise ValueError(f"No registered ingestor supports '*.{ext}' files (path='{path}')")
+            raise ValueError(
+                f"No registered ingestor supports '*.{ext}' files "
+                f"(path='{path}')"
+            )
 
         return helper.parse(path)
 
     @classmethod
     def _select_helper(cls, path: str) -> Optional[Type[IngestorInterface]]:
-        """Return the first registered helper that can handle the path, if any."""
+        """Return the first registered helper
+        that can handle the path, if any."""
+
         for helper in cls._helpers:
             if helper.can_ingest(path):
                 return helper

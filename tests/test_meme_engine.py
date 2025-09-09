@@ -34,7 +34,9 @@ class TestMemeEngine(unittest.TestCase):
         quote_body = "Stay pawsitive."
         quote_author = "Doggo"
 
-        out_path = self.engine.make_meme(self.input_image_path, quote_body, quote_author)
+        out_path = self.engine.make_meme(
+            self.input_image_path, quote_body, quote_author
+        )
 
         # The method should return a valid path
         self.assertIsInstance(out_path, str)
@@ -45,7 +47,8 @@ class TestMemeEngine(unittest.TestCase):
         with Image.open(out_path) as out_img:
             out_img.verify()  # verifies it's an image
 
-        # Ensure the output is placed under the configured tmp dir (or within it)
+        # Ensure the output is placed under the
+        # configured tmp dir (or within it)
         self.assertTrue(os.path.dirname(out_path).startswith(self.tmp_dir))
 
     def test_make_meme_with_empty_text(self):

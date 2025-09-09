@@ -8,9 +8,11 @@ from Ingestor.common_functions import _line_to_quote
 
 class DocxIngestor(IngestorInterface):
     """
-    Ingest .docx (Word) files by extracting paragraph text and parsing lines into quotes.
+    Ingest .docx (Word) files by extracting paragraph text
+    and parsing lines into quotes.
 
-    This implementation reads 'word/document.xml' from the .docx zip and collects all w:t text nodes.
+    This implementation reads 'word/document.xml' from the .docx zip
+    and collects all w:t text nodes.
     Each paragraph is treated as a potential 'quote - author' line.
     """
     allowed_extensions = {"docx"}
@@ -24,7 +26,9 @@ class DocxIngestor(IngestorInterface):
     def parse(cls, path: str) -> List[QuoteModel]:
         if not cls.can_ingest(path):
             ext = cls._get_extension(path)
-            raise ValueError(f"{cls.__name__} cannot ingest '*.{ext}' (path='{path}')")
+            raise ValueError(
+                f"{cls.__name__} cannot ingest '*.{ext}' (path='{path}')"
+            )
 
         quotes: List[QuoteModel] = []
         with zipfile.ZipFile(path) as z:
@@ -39,7 +43,10 @@ class DocxIngestor(IngestorInterface):
         # For each paragraph (w:p), concatenate all text nodes (w:t)
         for p in root.findall(".//w:p", ns):
             texts = [t.text or "" for t in p.findall(".//w:t", ns)]
-            paragraph = " ".join(t.strip() for t in texts if t is not None).strip()
+            paragraph = (" "
+                         .join(t.strip() for t in texts if t is not None)
+                         .strip()
+                         )
             if not paragraph:
                 continue
             q = _line_to_quote(paragraph)

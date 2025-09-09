@@ -7,6 +7,7 @@ from typing import Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
+
 class MemeEngine:
     def __init__(self, output_dir: str):
         self.output_dir = output_dir
@@ -30,7 +31,10 @@ class MemeEngine:
         if text:
             quote_text = f"{text}"
         if author:
-            quote_text = f"{quote_text} - {author}" if quote_text else f"- {author}"
+            if quote_text:
+                quote_text = f"{quote_text} - {author}"
+            else:
+                quote_text = f"- {author}"
 
         with Image.open(img_path) as im:
             # Resize maintaining aspect ratio
@@ -52,12 +56,16 @@ class MemeEngine:
                 text_w, text_h = self._multiline_text_size(draw, wrapped, font)
                 margin = 10
                 x = margin
-                y = random.randint(margin, max(margin, im.height - text_h - margin))
+                y = random.randint(margin,
+                                   max(margin, im.height - text_h - margin)
+                                   )
 
                 # Draw text using Pillow with a stroke for readability
                 self._draw_text_with_outline(draw, (x, y), wrapped, font)
 
-            out_path = os.path.join(self.output_dir, f"meme_{uuid.uuid4().hex}.jpg")
+            out_path = os.path.join(self.output_dir,
+                                    f"meme_{uuid.uuid4().hex}.jpg"
+                                    )
             im.save(out_path, format="JPEG", quality=85)
 
         return out_path
@@ -78,7 +86,9 @@ class MemeEngine:
         return ImageFont.load_default()
 
     @staticmethod
-    def _multiline_text_size(draw: ImageDraw.ImageDraw, text: str, font) -> tuple[int, int]:
+    def _multiline_text_size(draw: ImageDraw.ImageDraw,
+                             text: str,
+                             font) -> tuple[int, int]:
         try:
             bbox = draw.multiline_textbbox((0, 0), text, font=font)
             return bbox[2] - bbox[0], bbox[3] - bbox[1]
@@ -86,8 +96,14 @@ class MemeEngine:
             # Fallback approximation
             lines = text.splitlines() if text else [""]
             widths = [draw.textlength(line, font=font) for line in lines]
-            line_height = font.getbbox("Ay")[3] if hasattr(font, "getbbox") else font.size
-            return int(max(widths) if widths else 0), int(line_height * len(lines) * 1.2)
+            if hasattr(font, "getbbox"):
+                line_height = font.getbbox("Ay")[3]
+            else:
+                line_height = font.size
+
+            width_px = int(max(widths) if widths else 0)
+            height_px = int(line_height * len(lines) * 1.2)
+            return width_px, height_px
 
     @staticmethod
     def _draw_text_with_outline(
@@ -117,5 +133,9 @@ class MemeEngine:
                 for dy in (-stroke_width, 0, stroke_width):
                     if dx == 0 and dy == 0:
                         continue
-                    draw.multiline_text((x + dx, y + dy), text, font=font, fill=outline)
+                    draw.multiline_text((x + dx, y + dy),
+                                        text,
+                                        font=font,
+                                        fill=outline
+                                        )
             draw.multiline_text((x, y), text, font=font, fill=fill)

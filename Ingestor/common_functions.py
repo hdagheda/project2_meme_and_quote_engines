@@ -3,8 +3,9 @@ from QuoteEngine import QuoteModel
 
 def _line_to_quote(line: str) -> QuoteModel | None:
     """
-    Try to parse a single line of text into a QuoteModel using common separators.
-    Returns None if the line can't be parsed into (body, author).
+    Try to parse a single line of text into a QuoteModel
+    using common separators. Returns None if the line can't
+    be parsed into (body, author).
     """
     if not line:
         return None
