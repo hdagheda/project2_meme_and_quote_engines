@@ -2,17 +2,9 @@
 from __future__ import annotations
 
 from typing import Any, ClassVar, Iterable, Optional, Set, Type
-
-from QuoteEngine.quote_model import QuoteModel
 from typing import List
+
 from Ingestor.ingestor_interface import IngestorInterface
-
-import zipfile
-import xml.etree.ElementTree as ET
-import tempfile
-import subprocess
-import shutil
-
 
 class Ingestor(IngestorInterface):
     """

@@ -7,7 +7,6 @@ from typing import Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
-
 class MemeEngine:
     def __init__(self, output_dir: str):
         self.output_dir = output_dir
