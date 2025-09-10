@@ -1,7 +1,7 @@
 import random
 import os
 import requests
-
+import configparser
 import tempfile
 from flask import Flask, render_template, abort, request
 
@@ -15,18 +15,28 @@ meme = MemeEngine('./static')
 
 def setup():
     """ Load all resources """
+    config = configparser.ConfigParser()
+    config.read('./config.ini')
+    category = config.get('DEFAULT', 'category', fallback='sadhguru')
 
-    quote_files = ['./_data/DogQuotes/DogQuotesTXT.txt',
-                   './_data/DogQuotes/DogQuotesDOCX.docx',
-                   './_data/DogQuotes/DogQuotesPDF.pdf',
-                   './_data/DogQuotes/DogQuotesCSV.csv']
+    if category == 'sadhguru':
+        quote_files = ['./_data/SadhguruQuotes/SadhguruQuotesTXT.txt',
+                       './_data/SadhguruQuotes/SadhguruQuotesCSV.csv']
+    else:
+        quote_files = ['./_data/DogQuotes/DogQuotesTXT.txt',
+                       './_data/DogQuotes/DogQuotesDOCX.docx',
+                       './_data/DogQuotes/DogQuotesPDF.pdf',
+                       './_data/DogQuotes/DogQuotesCSV.csv']
 
     # quote_files variable
     quotes = []
     for f in quote_files:
         quotes.extend(Ingestor.parse(f))
 
-    images_path = "./_data/photos/dog/"
+    if category == 'sadhguru':
+        images_path = "./_data/photos/sadhguru/"
+    else:
+        images_path = "./_data/photos/dog/"
 
     # images within the images images_path directory
     imgs = []
