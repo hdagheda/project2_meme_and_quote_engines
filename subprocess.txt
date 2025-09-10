@@ -1,0 +1,17 @@
+subprocess.run call does, piece by piece:
+- It runs an external command-line tool called pdftotext to convert a PDF file into plain text.
+- The arguments are passed as a list, which is the recommended and safe way to invoke subprocess:
+    - "pdftotext": the executable (must be installed and on your PATH).
+    - "-layout": tells pdftotext to preserve the original layout (attempts to keep columns/spaces aligned).
+    - path: the input PDF file path.
+    - tmp_out.name: the output text file path (here, a temporary file).
+
+- check=True: if the process exits with a non-zero status (i.e., error), Python raises subprocess.CalledProcessError instead of silently continuing.
+- stdout=subprocess.PIPE and stderr=subprocess.PIPE: capture the program’s standard output and error streams in memory (so they don’t print to your terminal). In this specific usage, pdftotext writes the text to the output file, so stdout is usually empty; stderr can contain warnings/errors if something goes wrong.
+
+What happens at runtime
+- Python spawns the pdftotext process with the given arguments.
+- pdftotext reads the input PDF and writes extracted text to the provided output file path.
+- If pdftotext fails (bad file, missing permissions, etc.), the call raises CalledProcessError due to check=True.
+- If pdftotext isn’t installed or not found in PATH, the call raises FileNotFoundError.
+- On success, subprocess.run returns a CompletedProcess object, but in this pattern you don’t use it since output is in the temp file.
