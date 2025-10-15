@@ -129,6 +129,11 @@ python from meme import generate_meme
 
 Generated memes are saved under ./tmp, and the program prints the full path to the generated image.
 
+## Web Usage:
+- docker compose up --build
+- Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+
 ## Troubleshooting
 
 - No such file or directory for images:
