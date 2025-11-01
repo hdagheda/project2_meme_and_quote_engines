@@ -37,7 +37,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -65,8 +65,8 @@ jobs:
         id: render-task
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition-family: ${{ env.TASK_FAMILY }}
-          container-name: ${{ env.CONTAINER_NAME }}
+          task-definition-family: ${{ secrets.TASK_FAMILY }}
+          container-name: ${{ secrets.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
           cpu: 256
           memory: 512
@@ -76,7 +76,7 @@ jobs:
               "logDriver": "awslogs",
               "options": {
                 "awslogs-group": "/ecs/project2",
-                "awslogs-region": "${{ env.AWS_REGION }}",
+                "awslogs-region": "${{ secrets.AWS_REGION }}",
                 "awslogs-stream-prefix": "ecs"
               }
             }
@@ -89,5 +89,5 @@ jobs:
         with:
           task-definition: ${{ steps.render-task.outputs.task-definition }}
           service: ${{ steps.env-select.outputs.service }}
-          cluster: ${{ env.ECS_CLUSTER }}
+          cluster: ${{ secrets.ECS_CLUSTER }}
           wait-for-service-stability: true
