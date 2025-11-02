@@ -68,6 +68,7 @@ jobs:
             echo "service=${{ secrets.ECS_SERVICE_PRODUCTION }}" >> $GITHUB_OUTPUT
           else
             echo "service=${{ secrets.ECS_SERVICE_STAGING }}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Render new ECS task definition
         id: render-task
