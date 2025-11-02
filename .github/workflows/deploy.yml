@@ -10,7 +10,7 @@ jobs:
 
     env:
       ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_REGION: ap-southeast-2
       ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
       CONTAINER_NAME: project2-meme-quote
       TASK_FAMILY: project2-task
@@ -37,7 +37,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ap-southeast-2
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -76,7 +76,7 @@ jobs:
               "logDriver": "awslogs",
               "options": {
                 "awslogs-group": "/ecs/project2",
-                "awslogs-region": "${{ secrets.AWS_REGION }}",
+                "awslogs-region": "ap-southeast-2",
                 "awslogs-stream-prefix": "ecs"
               }
             }
